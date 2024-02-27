@@ -3,112 +3,99 @@ class Node:
         self.value = value
         self.left = None
         self.right = None
-        
+
 class BinaryTree:
     def __init__(self):
         self.root = None
-    
-    def in_order(self, node = None, results = None):
+
+    def in_order(self, node=None, results=[]): 
         node = node or self.root
-        
-        results = results or []
         if node:
-            if node.left:
-                self.in_order(node.left, results)
-            
+            self.in_order(node.left, results) 
             results.append(node.value)
-            
-            if node.right:
-                self.in_order(node.righ, results)
+            self.in_order(node.right, results)
         return results
-    
-    def pre_order(self, node=None, results= None):
+
+    def pre_order(self, node=None, results=[]):
         node = node or self.root
-        
-        results = results or []
-        
         if node:
             results.append(node.value)
-            
-            if node.left:
-                self.pre_order(node.left, results)
-            if node.right:
-                self.pre_order(node.right, results)
+            self.pre_order(node.left, results)
+            self.pre_order(node.right, results)
         return results
-    
-    def post_order(self, node= None, results= None):
+
+    def post_order(self, node=None, results=[]):
         node = node or self.root
-        
-        results = results or []
         if node:
-            if node.left:
-                self.post_order(node.left, results)
-                
-            if node.right:
-                self.post_order(node.right, results)
-         
-            return results
-        
+            self.post_order(node.left, results)
+            self.post_order(node.right, results)
+            results.append(node.value)
+        return results
+
     def find_max_val(self, root):
         if not root:
             return None
-        
+
         max_val = root.value
         left_val = self.find_max_val(root.left)
         right_val = self.find_max_val(root.right)
-        
-        if root.left:
-            if left_val > max_val:
-                max_val = left_val
-        if root.right:
-            if right_val > max_val:
-                max_val = right_val
-    
+
+        if left_val:  
+            max_val = max(max_val, left_val)
+        if right_val: 
+            max_val = max(max_val, right_val)
+
         return max_val
 
 class BinarySearchTree(BinaryTree):
-    def add(self, value, root=None):
-        root = root or self.root
-        node = Node(value)
-        
+    def add(self, value):
         if not self.root:
-            self.root = node
+            self.root = Node(value)
             return
-        
-        if value < root.value:
-            if root.left:
-                self.add(value, root.left)
+
+        current = self.root
+        while True:
+            if value < current.value:
+                if current.left:
+                    current = current.left
+                else:
+                    current.left = Node(value)
+                    break
             else:
-                root.left = node
-        else:
-            if root.right:
-                self.add(value, root.left)
+                if current.right:
+                    current = current.right
+                else:
+                    current.right = Node(value)
+                    break
+
+    def contains(self, value):
+        current = self.root
+        while current:
+            if value == current.value:
+                return True
+            elif value < current.value:
+                current = current.left
             else:
-                root.right = node
-                
-    def contains(self, value, current = None):
-        current = current or self.root
-        
-        if not self.root or value == Node:
-            print('no')
-            return False
-        
-        if current.value == value:
-            print('yes')
-            return True
-        elif current.value < value:
-            return self.contains(value, current.left)
-        else:
-            return self.contains(value, current.right)
-        print('no')
+                current = current.right
         return False
 
-if __name__ == "__main__":
-    tree = BinarySearchTree()
-    tree.root = Node(5)
-    tree.root.left = Node(66)
-    tree.root.right = Node(33)
-    tree.root.left.left = 10
-    tree.root.left.right = 20
-    
-print(tree.find_max_val(tree.root))
+    def __str__(self): 
+        def print_tree(node, level):
+            if node:
+                print_tree(node.right, level + 1)
+                print(' ' * 4 * level + str(node.value))
+                print_tree(node.left, level + 1)
+
+        output = ""
+        print_tree(self.root, 0)
+        return output
+
+
+tree = BinarySearchTree()
+tree.add(10)
+tree.add(5)
+tree.add(9)
+tree.add(50)
+tree.add(55)
+
+print(tree)
